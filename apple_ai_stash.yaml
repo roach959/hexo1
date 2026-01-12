@@ -1,0 +1,11 @@
+name: "Apple AI Rules Override"
+desc: "Apple AI"
+
+rules:
+  - DOMAIN,guzzoni.apple.com,HBO
+  - DOMAIN-SUFFIX,smoot.apple.com,HBO
+  - DOMAIN-SUFFIX,apple-relay.cloudflare.com,HBO
+  - DOMAIN-SUFFIX,apple-relay.fastly-edge.com,HBO
+  - DOMAIN-SUFFIX,cp4.cloudflare.com,HBO
+  - DOMAIN-SUFFIX,apple-relay.apple.com,HBO
+  - DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com,HBO
