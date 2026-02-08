@@ -1,0 +1,65 @@
+name: Generate Personalized Rule File
+
+on:
+  schedule:
+    # Runs at 04:00 UTC every day
+    - cron: '0 4 * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download and Merge Rules
+        run: |
+          # --- CONFIGURATION ---
+          # The name of your personal rule file in this repository
+          RULE_A_FILE="rule_ai.conf"
+          
+          # The external base rule URL
+          RULE_C_URL="https://johnshall.github.io/Shadowrocket-ADBlock-Rules-Forever/sr_direct_banad.conf"
+          
+          # The final generated file name
+          OUTPUT_FILE="rule_852.conf"
+
+          # --- EXECUTION ---
+          # 1. Download Rule C (The Base)
+          curl -sL "$RULE_C_URL" -o base_rule.conf
+
+          # 2. Extract the "Header" from Base Rule (everything up to and including [Rule])
+          # This keeps the [General] settings and stops exactly at [Rule]
+          sed '/\[Rule\]/q' base_rule.conf > "$OUTPUT_FILE"
+
+          # 3. Insert Your Personal Rules (Rule A) immediately after [Rule]
+          echo "# === Personal Rules ($RULE_A_FILE) ===" >> "$OUTPUT_FILE"
+          
+          if [ -f "$RULE_A_FILE" ]; then
+            cat "$RULE_A_FILE" >> "$OUTPUT_FILE"
+          else
+            echo "# Warning: $RULE_A_FILE was not found in the repository!" >> "$OUTPUT_FILE"
+          fi
+          
+          # Add a spacer
+          echo "" >> "$OUTPUT_FILE"
+
+          # 4. Append the rest of Base Rule (Rule C)
+          # This deletes everything up to [Rule] and prints the rest
+          echo "# === Base Rules (From Rule C) ===" >> "$OUTPUT_FILE"
+          sed '1,/\[Rule\]/d' base_rule.conf >> "$OUTPUT_FILE"
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add the specific output file
+          git add rule_852.conf
+          
+          # Only commit if there are actual changes to avoid empty commits
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update rule_852.conf" && git push)
