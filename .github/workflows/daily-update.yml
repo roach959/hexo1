@@ -3,7 +3,7 @@ name: Generate Personalized Rule File
 on:
   schedule:
     # Runs at 04:00 UTC every day
-    - cron: '0 4 * * *'
+    - cron: '35 12 * * *'
   workflow_dispatch: # Allows manual trigger
 
 jobs:
